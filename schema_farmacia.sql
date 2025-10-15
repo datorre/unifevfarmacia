@@ -98,7 +98,13 @@ CREATE TABLE lotes (
   medicamento_id BIGINT NOT NULL REFERENCES medicamentos(id) ON DELETE RESTRICT,
   data_fabricacao DATE NOT NULL,
   validade DATE NOT NULL,
-  validade_mes DATE GENERATED ALWAYS AS (date_trunc('month', validade)::date) STORED,
+  validade_mes DATE GENERATED ALWAYS AS (
+    make_date(
+      date_part('year', validade)::int,
+      date_part('month', validade)::int,
+      1
+    )
+  ) STORED,
   nome_comercial TEXT,
   ativo BOOLEAN NOT NULL DEFAULT TRUE,
   observacao TEXT,
@@ -533,7 +539,7 @@ ON CONFLICT (codigo) DO NOTHING;
 -- Validação de CPF
 -- =====================
 CREATE OR REPLACE FUNCTION fn_cpf_valido(cpf_input TEXT)
-RETURNS BOOLEAN LANGUAGE plpgsql AS
+RETURNS BOOLEAN LANGUAGE plpgsql IMMUTABLE AS
 $$
 DECLARE
   cleaned TEXT;
