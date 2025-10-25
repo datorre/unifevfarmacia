@@ -1,2 +1,6 @@
 # Ferramentas locais e artefatos não versionados
 tools/
+# Arquivos temporários de bloqueio do Office
+~$*.xlsx
+~$*.docx
+~$*.pptx

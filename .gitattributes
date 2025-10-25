@@ -1,0 +1,10 @@
+# Ensure binary files are not altered by line-ending conversions
+*.pdf binary
+*.xlsx binary
+*.docx binary
+*.pptx binary
+*.zip binary
+*.7z binary
+*.png binary
+*.jpg binary
+*.jpeg binary
