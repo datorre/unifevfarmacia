@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Documentação do Sistema de Farmácia</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Documentação do Sistema de Farmácia</h1>
+</header>
+<h1 id="documentação-do-projeto-farmácia">Documentação do Projeto —
+Farmácia</h1>
+<p>Este documento apresenta o levantamento de requisitos, regras de
+negócio, fluxos operacionais e visão geral das validações do sistema de
+gestão de estoque de medicamentos, com base no schema PostgreSQL em
+<code>schema_farmacia.sql</code>.</p>
+<h2 id="objetivo">Objetivo</h2>
+<ul>
+<li>Controlar entradas e saídas de medicamentos por lote (validade), com
+estoque calculado automaticamente.</li>
+<li>Emitir alertas operacionais (validade, reposição mínima, mês de
+vencimento iniciado).</li>
+<li>Garantir rastreabilidade (fornecedor, lote do fabricante, paciente,
+responsável).</li>
+<li>Assegurar controle de acesso por usuários, papéis e permissões.</li>
+</ul>
+<h2 id="requisitos-funcionais">Requisitos Funcionais</h2>
+<ul>
+<li>Cadastro de medicamentos com: nome padronizado (princípio ativo +
+dosagem + apresentação), classe terapêutica, tarja, forma de retirada
+(MIP/prescrição), forma física, apresentação, unidade base,
+genérico/original, limite mínimo, laboratório e código único do
+remédio.</li>
+<li>Gestão de lotes por validade (agrupamento mensal), com data de
+fabricação e validade obrigatórias.</li>
+<li>Entradas: fornecedor obrigatório, data de entrada, número do lote do
+fabricante, quantidade informada e conversão para unidade base
+(caixa/frascos → comprimidos/ml).</li>
+<li>Dispensações: paciente identificado (CPF), data da dispensação,
+responsável (opcional), quantidade informada e conversão para base,
+bloqueio de lote vencido e de saída acima do saldo.</li>
+<li>Estoque calculado automaticamente (soma das entradas em base – soma
+das saídas em base).</li>
+<li>Alertas: validade (≤30 dias e vencido), início do mês de vencimento,
+reposição mínima, &lt;10 unidades, ≤20% do estoque inicial (entradas
+cumuladas).</li>
+<li>Controle de acesso: permissões por papel e por usuário, checagem
+considerando usuário ativo.</li>
+</ul>
+<h2 id="regras-de-negócio-resumo">Regras de Negócio (Resumo)</h2>
+<ul>
+<li>Lote é determinado pela validade mensal: um lote por
+medicamento/validade_mês (UNIQUE).</li>
+<li>Nenhuma movimentação sem lote com validade.</li>
+<li>Bloqueio de dispensação de lotes vencidos.</li>
+<li>Dispensação só ocorre se houver saldo suficiente.</li>
+<li>Receita obrigatória quando forma de retirada for “com
+prescrição”.</li>
+<li>Código do medicamento é único, informado manualmente.</li>
+<li>Serial por classe terapêutica gerado automaticamente no cadastro do
+medicamento.</li>
+<li>Estoque baixo quando saldo ≤ limite mínimo, ou saldo &lt; 10, ou
+saldo ≤ 20% das entradas.</li>
+<li>Paciente deve ter CPF válido (constraint) e pode ter telefone e
+cidade.</li>
+<li>Senha de usuário armazenada em hash (bcrypt via pgcrypto).</li>
+</ul>
+<h2 id="fluxos-operacionais">Fluxos Operacionais</h2>
+<ul>
+<li>Entrada:
+<ul>
+<li>Registrar fornecedor, lote (válido), número do lote do fabricante,
+unidade e quantidade informada.</li>
+<li>Se a unidade informada não for a unidade base do medicamento,
+informar <code>unidades_por_embalagem</code> para conversão a
+<code>quantidade_base</code> (trigger calcula).</li>
+</ul></li>
+<li>Saída:
+<ul>
+<li>Selecionar paciente (CPF válido), lote, unidade e quantidade
+informada.</li>
+<li>Sistema converte para <code>quantidade_base</code> e verifica saldo
+e validade (trigger bloqueia se vencido/insuficiente).</li>
+<li>Se medicamento exigir prescrição, informar
+<code>numero_receita</code>.</li>
+</ul></li>
+<li>Alertas:
+<ul>
+<li>Validade (≤30 dias ou vencido) via
+<code>vw_alerta_validade</code>.</li>
+<li>Início do mês de vencimento via
+<code>vw_alerta_validade_mes_atual</code>.</li>
+<li>Estoque baixo via <code>vw_alerta_estoque_baixo</code>.</li>
+</ul></li>
+<li>Arquivamento:
+<ul>
+<li>Funções desativam lote/medicamento quando sem saldo ou vencido
+(preserva histórico).</li>
+</ul></li>
+</ul>
+<h2 id="controle-de-acesso-rbac">Controle de Acesso (RBAC)</h2>
+<ul>
+<li>Usuários (ativos/inativos) com login e email únicos; senha
+hash.</li>
+<li>Papéis agregam permissões (ex.: admin, estoquista, atendente,
+analista).</li>
+<li>Permissões básicas: <code>acesso_sistema</code>,
+<code>relatorios</code>, <code>entradas</code>, <code>saidas</code>,
+<code>estoque</code>.</li>
+<li>View <code>vw_usuarios_permissoes_efetivas</code> consolida
+permissões diretas + via papel.</li>
+<li>Função <code>fn_usuario_tem_permissao(usuario_id, codigo)</code>
+retorna TRUE somente para usuário ativo com a permissão.</li>
+</ul>
+<h2 id="views-e-funções-principais">Views e Funções Principais</h2>
+<ul>
+<li>Views:
+<ul>
+<li><code>vw_estoque_por_lote</code>: saldo, dias para vencimento e
+status (OK/Próximo de vencer/Bloquear dispensação).</li>
+<li><code>vw_estoque_por_medicamento</code>: saldo consolidado e alertas
+de reposição.</li>
+<li><code>vw_alerta_validade</code>: próximos de vencer e vencidos.</li>
+<li><code>vw_alerta_validade_mes_atual</code>: lotes cujo mês de
+vencimento é o mês corrente.</li>
+<li><code>vw_alerta_estoque_baixo</code>: consolida condições de estoque
+baixo.</li>
+<li><code>vw_usuarios_permissoes_efetivas</code>: permissões do
+usuário.</li>
+</ul></li>
+<li>Funções e Triggers:
+<ul>
+<li><code>fn_set_serial_por_classe</code> +
+<code>trg_set_serial_por_classe</code>: serial sequencial por classe
+para medicamentos.</li>
+<li><code>fn_calc_quantidade_base_entrada</code> +
+<code>trg_calc_quantidade_base_entrada</code>: conversão de entrada para
+unidade base.</li>
+<li><code>fn_calc_quantidade_base_dispensacao</code> +
+<code>trg_calc_quantidade_base_dispensacao</code>: conversão de saída
+para base.</li>
+<li><code>fn_check_saldo_e_validade_dispensacao</code> +
+<code>trg_check_saldo_e_validade_dispensacao</code>: bloqueios de
+vencimento e saldo; receita obrigatória.</li>
+<li><code>fn_arquivar_lote_se_sem_saldo_ou_vencido</code> e
+<code>fn_arquivar_medicamento_se_sem_saldo</code>: exclusão lógica.</li>
+<li><code>fn_usuario_tem_permissao</code>: checagem de permissão.</li>
+<li><code>fn_cpf_valido</code> + <code>CHECK</code> em
+<code>pacientes.cpf</code>: validação de CPF.</li>
+</ul></li>
+</ul>
+<h2 id="execução">Execução</h2>
+<ul>
+<li>Execute <code>schema_farmacia.sql</code> no PostgreSQL (ex.:
+<code>psql -f schema_farmacia.sql</code>).</li>
+<li>Cadastre classes terapêuticas com <code>codigo_classe</code>,
+laboratórios e fornecedores.</li>
+<li>Cadastre medicamentos (serial da classe é gerado
+automaticamente).</li>
+<li>Lance lotes (com data de fabricação/validade) e entradas.</li>
+<li>Cadastre pacientes e faça dispensações.</li>
+<li>Configure usuários, papéis e permissões (seeds de permissões já
+incluídos).</li>
+</ul>
+<h2 id="dicionário-de-dados">Dicionário de Dados</h2>
+<ul>
+<li>Consulte <code>docs/dicionario_de_dados.md</code> para detalhes de
+campos, tipos, FKs, unicidades e validações de cada tabela, view e
+função.</li>
+</ul>
+<h1 id="dicionário-de-dados-farmácia">Dicionário de Dados —
+Farmácia</h1>
+<p>Este dicionário descreve estruturas, campos, tipos, constraints,
+validações, triggers e regras de negócio por tabela, de acordo com o
+schema em <code>schema_farmacia.sql</code>.</p>
+<h2 id="tipos-enumerados">Tipos Enumerados</h2>
+<ul>
+<li><code>tarja_tipo</code>: <code>sem_tarja</code>,
+<code>tarja_amarela</code>, <code>tarja_vermelha</code>,
+<code>tarja_preta</code>.</li>
+<li><code>forma_retirada_tipo</code>: <code>MIP</code>,
+<code>com_prescricao</code>.</li>
+<li><code>forma_fisica_tipo</code>: <code>solida</code>,
+<code>pastosa</code>, <code>liquida</code>, <code>gasosa</code>.</li>
+<li><code>unidade_contagem</code>: <code>comprimido</code>,
+<code>capsula</code>, <code>dragea</code>, <code>sache</code>,
+<code>ampola</code>, <code>frasco</code>, <code>caixa</code>,
+<code>ml</code>, <code>g</code>, <code>unidade</code>,
+<code>aerosol</code>, <code>xarope</code>, <code>solucao</code>.</li>
+<li><code>estado_item</code>: <code>novo</code>, <code>lacrado</code>,
+<code>aberto</code>, <code>avariado</code>.</li>
+<li><code>fornecedor_tipo</code>: <code>doacao</code>,
+<code>compra</code>, <code>parceria</code>, <code>outros</code>.</li>
+</ul>
+<h2 id="tabelas">Tabelas</h2>
+<h3 id="laboratorios">laboratorios</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>nome</code> TEXT NOT NULL UNIQUE Regras: Cadastro de
+fabricantes/laboratórios.</li>
+</ul>
+<h3 id="classes_terapeuticas">classes_terapeuticas</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>codigo_classe</code> SMALLINT NOT NULL UNIQUE</li>
+<li><code>nome</code> TEXT NOT NULL UNIQUE Regras: Código fixo por
+classe; usado para serial por classe em <code>medicamentos</code>.</li>
+</ul>
+<h3 id="fornecedores">fornecedores</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>nome</code> TEXT NOT NULL</li>
+<li><code>tipo</code> fornecedor_tipo NOT NULL DEFAULT
+<code>doacao</code></li>
+<li><code>contato</code> TEXT Regras: Cadastro de fornecedores (doação,
+compra, parceria).</li>
+</ul>
+<h3 id="pacientes">pacientes</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>nome</code> TEXT NOT NULL</li>
+<li><code>cpf</code> TEXT NOT NULL UNIQUE (CHECK
+<code>fn_cpf_valido(cpf)</code>)</li>
+<li><code>telefone</code> TEXT</li>
+<li><code>cidade</code> TEXT Regras: CPF obrigatório e válido;
+identifica dispensações.</li>
+</ul>
+<h3 id="medicamentos">medicamentos</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>codigo</code> TEXT NOT NULL UNIQUE (informado
+manualmente)</li>
+<li><code>nome</code> TEXT NOT NULL (padrão: princípio ativo + dosagem +
+apresentação)</li>
+<li><code>laboratorio_id</code> BIGINT FK <code>laboratorios(id)</code>
+ON DELETE RESTRICT</li>
+<li><code>classe_terapeutica_id</code> BIGINT NOT NULL FK
+<code>classes_terapeuticas(id)</code> ON DELETE RESTRICT</li>
+<li><code>tarja</code> tarja_tipo NOT NULL</li>
+<li><code>forma_retirada</code> forma_retirada_tipo NOT NULL</li>
+<li><code>forma_fisica</code> forma_fisica_tipo NOT NULL</li>
+<li><code>apresentacao</code> unidade_contagem NOT NULL</li>
+<li><code>unidade_base</code> unidade_contagem NOT NULL (unidade para
+contagem de estoque)</li>
+<li><code>dosagem_valor</code> NUMERIC(12,3) NOT NULL</li>
+<li><code>dosagem_unidade</code> TEXT NOT NULL (ex.: mg, ml)</li>
+<li><code>generico</code> BOOLEAN NOT NULL DEFAULT FALSE</li>
+<li><code>limite_minimo</code> NUMERIC(12,3) NOT NULL DEFAULT 0</li>
+<li><code>serial_por_classe</code> INTEGER NOT NULL (gerado por
+trigger)</li>
+<li><code>ativo</code> BOOLEAN NOT NULL DEFAULT TRUE Índices: por
+classe, tarja e genérico. Regras: <code>serial_por_classe</code>
+sequencial por classe; <code>limite_minimo</code> usado em alertas.</li>
+</ul>
+<h3 id="lotes">lotes</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>medicamento_id</code> BIGINT NOT NULL FK
+<code>medicamentos(id)</code> ON DELETE RESTRICT</li>
+<li><code>data_fabricacao</code> DATE NOT NULL</li>
+<li><code>validade</code> DATE NOT NULL</li>
+<li><code>validade_mes</code> DATE GENERATED ALWAYS AS
+(date_trunc(‘month’, validade)::date) STORED</li>
+<li><code>nome_comercial</code> TEXT</li>
+<li><code>ativo</code> BOOLEAN NOT NULL DEFAULT TRUE</li>
+<li><code>observacao</code> TEXT</li>
+<li>UNIQUE (medicamento_id, validade_mes) Índices: por
+<code>validade</code> e <code>validade_mes</code>. Regras: Um lote por
+mês de validade para cada medicamento; base para alertas mensais.</li>
+</ul>
+<h3 id="entradas">entradas</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>data_entrada</code> DATE NOT NULL DEFAULT CURRENT_DATE</li>
+<li><code>fornecedor_id</code> BIGINT NOT NULL FK
+<code>fornecedores(id)</code> ON DELETE RESTRICT</li>
+<li><code>lote_id</code> BIGINT NOT NULL FK <code>lotes(id)</code> ON
+DELETE RESTRICT</li>
+<li><code>numero_lote_fornecedor</code> TEXT NOT NULL (UNIQUE por
+<code>lote_id</code>)</li>
+<li><code>quantidade_informada</code> NUMERIC(12,3) NOT NULL CHECK
+(&gt;0)</li>
+<li><code>quantidade_base</code> NUMERIC(12,3) NOT NULL CHECK (&gt;0)
+(calculado por trigger)</li>
+<li><code>unidade</code> unidade_contagem NOT NULL</li>
+<li><code>unidades_por_embalagem</code> NUMERIC(12,3) (usada na
+conversão quando <code>unidade</code> ≠ <code>unidade_base</code>)</li>
+<li><code>estado</code> estado_item (opcional)</li>
+<li><code>observacao</code> TEXT</li>
+<li>UNIQUE (lote_id, numero_lote_fornecedor) Trigger:
+<code>trg_calc_quantidade_base_entrada</code> (converte para unidade
+base, exige <code>unidades_por_embalagem</code> quando necessário).
+Regras: Entrada sempre referindo lote válido e fornecedor definido.</li>
+</ul>
+<h3 id="dispensacoes">dispensacoes</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>data_dispensa</code> TIMESTAMP NOT NULL DEFAULT NOW()</li>
+<li><code>responsavel</code> TEXT (opcional)</li>
+<li><code>paciente_id</code> BIGINT NOT NULL FK
+<code>pacientes(id)</code> ON DELETE RESTRICT</li>
+<li><code>lote_id</code> BIGINT NOT NULL FK <code>lotes(id)</code> ON
+DELETE RESTRICT</li>
+<li><code>dosagem</code> TEXT (opcional; a dosagem padrão está em
+<code>medicamentos</code>)</li>
+<li><code>nome_comercial</code> TEXT (opcional)</li>
+<li><code>quantidade_informada</code> NUMERIC(12,3) NOT NULL CHECK
+(&gt;0)</li>
+<li><code>quantidade_base</code> NUMERIC(12,3) NOT NULL CHECK (&gt;0)
+(calculado por trigger)</li>
+<li><code>unidade</code> unidade_contagem NOT NULL</li>
+<li><code>numero_receita</code> TEXT (obrigatório se
+<code>forma_retirada</code> = <code>com_prescricao</code>)
+Triggers:</li>
+<li><code>trg_calc_quantidade_base_dispensacao</code> (conversão para
+base usando última referência de embalagem do lote).</li>
+<li><code>trg_check_saldo_e_validade_dispensacao</code> (bloqueia
+vencido/sem saldo; exige receita quando necessário). Regras: Saída
+somente com saldo existente; validações operacionais pelo trigger.</li>
+</ul>
+<h3 id="usuarios">usuarios</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>nome</code> TEXT NOT NULL</li>
+<li><code>celular</code> TEXT</li>
+<li><code>email</code> TEXT NOT NULL UNIQUE</li>
+<li><code>login</code> TEXT NOT NULL UNIQUE</li>
+<li><code>senha_hash</code> TEXT NOT NULL (bcrypt via trigger)</li>
+<li><code>datacadastro</code> TIMESTAMP NOT NULL DEFAULT NOW()</li>
+<li><code>ultimoacesso</code> TIMESTAMP</li>
+<li><code>ativo</code> BOOLEAN NOT NULL DEFAULT TRUE Trigger:
+<code>trg_hash_senha_usuarios</code> (hash automático de senha quando
+não vier hashada). Regras: Usuários inativos não possuem acesso mesmo
+com permissões.</li>
+</ul>
+<h3 id="permissoes">permissoes</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>codigo</code> TEXT NOT NULL UNIQUE (ex.:
+<code>acesso_sistema</code>, <code>relatorios</code>,
+<code>entradas</code>, <code>saidas</code>, <code>estoque</code>)</li>
+<li><code>nome</code> TEXT NOT NULL Seeds: permissões básicas inseridas
+com <code>ON CONFLICT DO NOTHING</code>.</li>
+</ul>
+<h3 id="papeis">papeis</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>nome</code> TEXT NOT NULL UNIQUE</li>
+<li><code>descricao</code> TEXT Regras: agregam permissões.</li>
+</ul>
+<h3 id="papeis_permissoes">papeis_permissoes</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>papel_id</code> BIGINT NOT NULL FK <code>papeis(id)</code> ON
+DELETE CASCADE</li>
+<li><code>permissao_id</code> BIGINT NOT NULL FK
+<code>permissoes(id)</code> ON DELETE CASCADE</li>
+<li>UNIQUE (papel_id, permissao_id) Regras: define o conjunto de
+permissões de um papel.</li>
+</ul>
+<h3 id="usuarios_papeis">usuarios_papeis</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>usuario_id</code> BIGINT NOT NULL FK <code>usuarios(id)</code>
+ON DELETE CASCADE</li>
+<li><code>papel_id</code> BIGINT NOT NULL FK <code>papeis(id)</code> ON
+DELETE CASCADE</li>
+<li>UNIQUE (usuario_id, papel_id) Regras: vincula usuário aos
+papéis.</li>
+</ul>
+<h3 id="usuarios_permissoes">usuarios_permissoes</h3>
+<ul>
+<li><code>id</code> BIGSERIAL PK</li>
+<li><code>usuario_id</code> BIGINT NOT NULL FK <code>usuarios(id)</code>
+ON DELETE CASCADE</li>
+<li><code>permissao_id</code> BIGINT NOT NULL FK
+<code>permissoes(id)</code> ON DELETE CASCADE</li>
+<li>UNIQUE (usuario_id, permissao_id) Regras: concessão direta ao
+usuário (override).</li>
+</ul>
+<h2 id="views">Views</h2>
+<ul>
+<li><code>vw_estoque_por_lote</code>:
+<ul>
+<li>Campos: lote_id, medicamento_id, medicamento, codigo, generico,
+tarja, forma_retirada, forma_fisica, apresentacao, unidade_base,
+dosagem_valor, dosagem_unidade, data_fabricacao, validade, validade_mes,
+quantidade_entrada, quantidade_saida, quantidade_disponivel,
+dias_para_vencimento, status.</li>
+<li>Status: <code>OK</code>, <code>Próximo de vencer</code> (&lt;=30
+dias), <code>Bloquear dispensação</code> (vencido).</li>
+</ul></li>
+<li><code>vw_estoque_por_medicamento</code>:
+<ul>
+<li>Consolidado por medicamento: entrada, saída, saldo, limite_mínimo,
+alertas (<code>alerta_minimo</code>, <code>&lt;10 unidades</code>,
+<code>≤20%</code>).</li>
+</ul></li>
+<li><code>vw_alerta_validade</code>:
+<ul>
+<li>Filtra lotes com status <code>Próximo de vencer</code> ou
+<code>Bloquear dispensação</code>.</li>
+</ul></li>
+<li><code>vw_alerta_validade_mes_atual</code>:
+<ul>
+<li>Lotes cujo <code>validade_mes</code> coincide com o mês atual.</li>
+</ul></li>
+<li><code>vw_alerta_estoque_baixo</code>:
+<ul>
+<li>Consolida alertas de estoque baixo.</li>
+</ul></li>
+<li><code>vw_usuarios_permissoes_efetivas</code>:
+<ul>
+<li>Permissões efetivas do usuário (diretas + via papel).</li>
+</ul></li>
+</ul>
+<h2 id="funções-e-triggers">Funções e Triggers</h2>
+<ul>
+<li><code>fn_set_serial_por_classe</code> +
+<code>trg_set_serial_por_classe</code>: define
+<code>serial_por_classe</code> no INSERT de <code>medicamentos</code>
+com base no <code>codigo_classe</code> da sua classe.</li>
+<li><code>fn_calc_quantidade_base_entrada</code> +
+<code>trg_calc_quantidade_base_entrada</code>: converte entradas para
+<code>unidade_base</code>; exige <code>unidades_por_embalagem</code>
+quando unidade difere.</li>
+<li><code>fn_calc_quantidade_base_dispensacao</code> +
+<code>trg_calc_quantidade_base_dispensacao</code>: converte saídas para
+base; usa a última referência de embalagem da entrada para o lote e
+unidade.</li>
+<li><code>fn_check_saldo_e_validade_dispensacao</code> +
+<code>trg_check_saldo_e_validade_dispensacao</code>:
+<ul>
+<li>Bloqueia dispensação de lotes vencidos e de saídas acima do
+saldo.</li>
+<li>Exige <code>numero_receita</code> quando <code>forma_retirada</code>
+= <code>com_prescricao</code>.</li>
+</ul></li>
+<li><code>fn_arquivar_lote_se_sem_saldo_ou_vencido</code>:
+<ul>
+<li>Atualiza <code>lotes.ativo = FALSE</code> quando saldo ≤ 0 ou
+vencido.</li>
+</ul></li>
+<li><code>fn_arquivar_medicamento_se_sem_saldo</code>:
+<ul>
+<li>Atualiza <code>medicamentos.ativo = FALSE</code> quando saldo
+consolidado ≤ 0.</li>
+</ul></li>
+<li><code>fn_usuario_tem_permissao(usuario_id, codigo)</code>:
+<ul>
+<li>Retorna TRUE somente quando o usuário está ativo e possui a
+permissão.</li>
+</ul></li>
+<li><code>fn_cpf_valido</code> + <code>CHECK</code> em
+<code>pacientes.cpf</code>:
+<ul>
+<li>Valida CPF (dígitos, tamanho 11, não repetido, dígitos verificadores
+oficiais).</li>
+</ul></li>
+<li><code>trg_hash_senha_usuarios</code>:
+<ul>
+<li>Aplica <code>crypt(..., gen_salt('bf'))</code> quando
+<code>senha_hash</code> não vier hashada.</li>
+</ul></li>
+</ul>
+<h2 id="índices">Índices</h2>
+<ul>
+<li><code>idx_medicamentos_classe</code>,
+<code>idx_medicamentos_tarja</code>,
+<code>idx_medicamentos_generico</code>.</li>
+<li><code>idx_lotes_validade</code>,
+<code>idx_lotes_validade_mes</code>.</li>
+<li><code>idx_entradas_lote</code>, <code>idx_dispensacoes_lote</code>,
+<code>idx_dispensacoes_data</code>.</li>
+<li><code>idx_usuarios_login</code>, <code>idx_usuarios_email</code>,
+<code>idx_usuarios_ultimoacesso</code>,
+<code>idx_usuarios_ativo</code>.</li>
+<li><code>idx_pacientes_cpf</code>,
+<code>idx_fornecedores_tipo</code>.</li>
+</ul>
+<h2 id="validações-por-campo-resumo">Validações por Campo (Resumo)</h2>
+<ul>
+<li>Quantidades: <code>quantidade_informada</code> e
+<code>quantidade_base</code> com <code>CHECK (&gt;0)</code> em entradas
+e saídas.</li>
+<li>CPF: <code>CHECK (fn_cpf_valido(cpf))</code> e <code>UNIQUE</code>
+em <code>pacientes</code>.</li>
+<li>Unicidades importantes: <code>medicamentos.codigo</code>,
+<code>classes_terapeuticas.codigo_classe</code>,
+<code>laboratorios.nome</code>, <code>classes_terapeuticas.nome</code>,
+<code>permissoes.codigo</code>, <code>papeis.nome</code>,
+<code>usuarios.login</code>, <code>usuarios.email</code>.</li>
+<li>Lote mensal: <code>UNIQUE (medicamento_id, validade_mes)</code>
+garante um agrupamento de lote por mês de validade por medicamento.</li>
+<li>Lote do fabricante:
+<code>UNIQUE (lote_id, numero_lote_fornecedor)</code> evita duplicidade
+por lote.</li>
+<li>Datas obrigatórias: <code>data_entrada</code> em entradas;
+<code>data_dispensa</code> em saídas.</li>
+<li>Prescrição: <code>numero_receita</code> obrigatório quando
+<code>medicamentos.forma_retirada = 'com_prescricao'</code> (validação
+no trigger).</li>
+</ul>
+<h2 id="observações-de-modelagem">Observações de Modelagem</h2>
+<ul>
+<li>Estoque é derivado de movimentos (views), não armazenado em coluna —
+mais seguro contra inconsistências.</li>
+<li>Conversão de unidades mantém o saldo na unidade base do medicamento
+(padroniza cálculo e alertas).</li>
+<li>Exclusão lógica preserva histórico; pode ser acionada por rotina
+administrativa usando as funções de arquivamento.</li>
+</ul>
+</body>
+</html>
